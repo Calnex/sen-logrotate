@@ -1162,30 +1162,6 @@ static int readConfigFile(const char *configFile, struct logInfo *defConfig)
         return 0;
     }
 
-    if (getuid() == ROOT_UID) {
-        if ((sb_config.st_mode & 07533) != 0400) {
-            message(MESS_WARN,
-                    "Potentially dangerous mode on %s: 0%o\n",
-                    configFile, (unsigned) (sb_config.st_mode & 07777));
-        }
-
-        if (sb_config.st_mode & 0022) {
-            message(MESS_ERROR,
-                    "Ignoring %s because it is writable by group or others.\n",
-                    configFile);
-            close(fd);
-            return 1;
-        }
-
-        if (sb_config.st_uid != ROOT_UID) {
-            message(MESS_ERROR,
-                    "Ignoring %s because the file owner is wrong (should be root or user with uid 0).\n",
-                    configFile);
-            close(fd);
-            return 1;
-        }
-    }
-
     if (sb_config.st_size > 0xffffff) {
         message(MESS_ERROR, "file %s too large, probably not a config file.\n",
                 configFile);
